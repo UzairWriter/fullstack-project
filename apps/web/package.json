@@ -1,0 +1,9 @@
+{
+  "name": "@fullstack-project/web",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "echo 'Web App started'",
+    "build": "echo 'Web App built'"
+  }
+}
