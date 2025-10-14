@@ -16,19 +16,19 @@ jobs:
       uses: actions/checkout@v4
 
     # 2. Setup Node.js environment
-    # Use the general setup-node first
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: 20
 
     # 3. Setup pnpm and Install Monorepo dependencies
-    # This action automatically handles the PATH, caching, and installation.
     - name: Install pnpm dependencies
       uses: pnpm/action-setup@v3
       with:
         version: 8
-        run_install: true # <--- Setting this to 'true' runs 'pnpm install' for you
+        run_install: true
+        # FIX: Explicitly disable store pruning to avoid the permission/corruption error
+        store_prune: false # <--- ADD THIS LINE
         
     # 4. Run checks for the Web App (apps/web)
     - name: Build Web App
