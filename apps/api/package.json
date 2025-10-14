@@ -1,0 +1,9 @@
+{
+  "name": "@fullstack-project/api",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "echo 'API Server started'",
+    "build": "echo 'API Server built'"
+  }
+}
