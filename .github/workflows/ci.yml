@@ -18,28 +18,32 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       
-    # 2. Set up Node.js environment
+    # 2. Setup pnpm (CRITICAL: Must run first to put 'pnpm' on the PATH)
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v3
+      with:
+        version: 8
+
+    # 3. Set up Node.js environment
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: 20
-        cache: 'pnpm' # Use pnpm cache for fast installs
-
-    # 3. Install pnpm
-    - name: Install pnpm
-      uses: pnpm/action-setup@v3
-      with:
-        version: 8
-        run_install: false # We will run install manually
+        # Tell setup-node to use pnpm for package resolution and caching
+        cache: 'pnpm' 
+        cache-dependency-path: 'pnpm-lock.yaml' 
 
     # 4. Install Monorepo dependencies
     - name: Install dependencies
+      # Use --frozen-lockfile for reliable CI builds
       run: pnpm install --frozen-lockfile
 
     # 5. Run checks for the Web App (apps/web)
-    - name: Build & Test Web App
+    - name: Build Web App
+      # The build script must be defined in apps/web/package.json
       run: pnpm --filter web run build
       
     # 6. Run checks for the API App (apps/api)
-    - name: Build & Test API App
+    - name: Build API App
+      # The build script must be defined in apps/api/package.json
       run: pnpm --filter api run build
