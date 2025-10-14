@@ -22,13 +22,12 @@ jobs:
         node-version: 20
 
     # 3. Setup pnpm and Install Monorepo dependencies
+    # This is the correct, clean setup for pnpm
     - name: Install pnpm dependencies
       uses: pnpm/action-setup@v3
       with:
         version: 8
-        run_install: true
-        # FIX: Explicitly disable store pruning to avoid the permission/corruption error
-        store_prune: false # <--- ADD THIS LINE
+        run_install: true # Runs pnpm install automatically
         
     # 4. Run checks for the Web App (apps/web)
     - name: Build Web App
