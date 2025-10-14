@@ -1,0 +1,45 @@
+name: CI Checks
+
+# Controls when the workflow should run
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main" ]
+
+# A workflow run is made up of one or more jobs
+jobs:
+  build_and_test:
+    # Use the latest version of Ubuntu
+    runs-on: ubuntu-latest
+    
+    steps:
+    # 1. Checkout the repository code
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    # 2. Set up Node.js environment
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'pnpm' # Use pnpm cache for fast installs
+
+    # 3. Install pnpm
+    - name: Install pnpm
+      uses: pnpm/action-setup@v3
+      with:
+        version: 8
+        run_install: false # We will run install manually
+
+    # 4. Install Monorepo dependencies
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+
+    # 5. Run checks for the Web App (apps/web)
+    - name: Build & Test Web App
+      run: pnpm --filter web run build
+      
+    # 6. Run checks for the API App (apps/api)
+    - name: Build & Test API App
+      run: pnpm --filter api run build
