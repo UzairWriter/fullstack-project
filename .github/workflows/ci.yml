@@ -1,49 +1,39 @@
 name: CI Checks
 
-# Controls when the workflow should run
 on:
   push:
     branches: [ "main", "develop" ]
   pull_request:
     branches: [ "main" ]
 
-# A workflow run is made up of one or more jobs
 jobs:
   build_and_test:
-    # Use the latest version of Ubuntu
     runs-on: ubuntu-latest
     
     steps:
     # 1. Checkout the repository code
     - name: Checkout repository
       uses: actions/checkout@v4
-      
-    # 2. Setup pnpm (CRITICAL: Must run first to put 'pnpm' on the PATH)
-    - name: Setup pnpm
-      uses: pnpm/action-setup@v3
-      with:
-        version: 8
 
-    # 3. Set up Node.js environment
+    # 2. Setup Node.js environment
+    # Use the general setup-node first
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: 20
-        # Tell setup-node to use pnpm for package resolution and caching
-        cache: 'pnpm' 
-        cache-dependency-path: 'pnpm-lock.yaml' 
 
-    # 4. Install Monorepo dependencies
-    - name: Install dependencies
-      # Use --frozen-lockfile for reliable CI builds
-      run: pnpm install --frozen-lockfile
-
-    # 5. Run checks for the Web App (apps/web)
+    # 3. Setup pnpm and Install Monorepo dependencies
+    # This action automatically handles the PATH, caching, and installation.
+    - name: Install pnpm dependencies
+      uses: pnpm/action-setup@v3
+      with:
+        version: 8
+        run_install: true # <--- Setting this to 'true' runs 'pnpm install' for you
+        
+    # 4. Run checks for the Web App (apps/web)
     - name: Build Web App
-      # The build script must be defined in apps/web/package.json
       run: pnpm --filter web run build
       
-    # 6. Run checks for the API App (apps/api)
+    # 5. Run checks for the API App (apps/api)
     - name: Build API App
-      # The build script must be defined in apps/api/package.json
       run: pnpm --filter api run build
